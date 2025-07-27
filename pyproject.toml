@@ -1,0 +1,24 @@
+[project]
+name = "personal-agent-pkg"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.116.1",
+    "langchain>=0.3.27",
+    "neo4j>=5.28.1",
+    "notion-client>=2.4.0",
+    "ollama-python>=0.1.2",
+    "qdrant-client>=1.15.0",
+    "uvicorn>=0.35.0",
+    "zep-python>=2.0.2",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "flake8>=7.3.0",
+    "mypy>=1.17.0",
+    "pytest>=8.4.1",
+]
