@@ -56,4 +56,11 @@ Voir **[TASKS.md](./TASKS.md)** pour le statut détaillé et prochaines actions.
 - UX: 50% temps recherche réduit, continuité cross-platform
 
 ---
-**Instructions pour Claude Code**: Consulte DEVELOPMENT_PLAN.md pour l'architecture détaillée et TASKS.md pour les tâches courantes. Respecte l'architecture Zep + UV + protocoles A2A/ACP. Priorise performance, modularité, et tests.
+**Instructions pour Claude Code**: 
+- Consulte DEVELOPMENT_PLAN.md pour l'architecture détaillée et TASKS.md pour les tâches courantes
+- Respecte l'architecture Zep + UV + protocoles A2A/ACP. Priorise performance, modularité, et tests
+- **OBLIGATOIRE**: Toujours mettre à jour TASKS.md quand une tâche est complétée :
+  - [x] Marquer la tâche terminée avec timestamp
+  - ⚡ Ajouter le temps réel vs estimé  
+  - 📊 Mettre à jour les métriques de progression
+  - 📝 Documenter dans la section "Session" les actions effectuées
