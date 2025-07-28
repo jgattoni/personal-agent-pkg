@@ -4,7 +4,7 @@
             "command": "npx",
             "args": ["-y", "firecrawl-mcp"],
             "env": {
-            "FIRECRAWL_API_KEY": "fc-c92a4f0bd1b44eeb93605b4f3018b402"
+                "FIRECRAWL_API_KEY": "your_firecrawl_api_key_here"
             }
         },
         "context7": {
@@ -13,15 +13,15 @@
         },
         "Ref": {
             "type": "http",
-            "url": "https://api.ref.tools/mcp?apiKey=ref-350582b464cd0115fe9d"
+            "url": "https://api.ref.tools/mcp?apiKey=your_ref_api_key_here"
         },
         "exa": {
             "command": "npx",
             "args": [
                 "-y",
                 "mcp-remote",
-                "https://mcp.exa.ai/mcp?exaApiKey=34d003eb-00ea-4e5c-bfcb-7a3b47bef56d"
-                ]
+                "https://mcp.exa.ai/mcp?exaApiKey=your_exa_api_key_here"
+            ]
         }
     }      
 }

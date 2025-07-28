@@ -75,5 +75,8 @@ dmypy.json
 secrets/
 keys/
 
+# MCP configuration with API keys
+.mcp.json
+
 # Config specific to local development
 config/local/
