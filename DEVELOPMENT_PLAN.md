@@ -13,7 +13,7 @@ Développer un agent personnel intelligent qui s'intègre avec Notion et fonctio
 - **Knowledge Graph** : Zep + Neo4j + Qdrant hybride
 - **Protocols** : MCP (tools), ACP (local agents), A2A (remote agents)
 
-### Architecture de communication agents
+### Architecture de communication agents (Mise à jour A2A spec 0.2)
 ```python
 # Agents locaux (ACP) - Performance maximale
 AGENTS_LOCAL = {
@@ -24,79 +24,107 @@ AGENTS_LOCAL = {
     "pkg_evolution_engine": "http://localhost:8084/acp"
 }
 
-# Agents distants (A2A) - Intégrations externes
+# Agents distants (A2A) - Conformes spec officielle avec Agent Cards
 AGENTS_REMOTE = {
-    "notion_mcp": "https://api.notion.com/mcp",
-    "claude_code_remote": "https://claude-code.anthropic.com/a2a",
-    "zep_cloud": "https://api.getzep.com/a2a"
+    "claude_code_a2a": {
+        "agent_card_url": "https://claude-api.anthropic.com/.well-known/agent-card",
+        "base_url": "https://claude-api.anthropic.com/v1/a2a",
+        "capabilities": ["code_analysis", "development_assistance", "memory_integration"]
+    },
+    "notion_a2a": {
+        "agent_card_url": "https://api.notion.com/.well-known/agent-card", 
+        "base_url": "https://api.notion.com/v1/a2a",
+        "capabilities": ["page_management", "database_queries", "content_extraction"]
+    },
+    "zep_cloud_a2a": {
+        "agent_card_url": "https://api.getzep.com/.well-known/agent-card",
+        "base_url": "https://api.getzep.com/v1/a2a", 
+        "capabilities": ["memory_search", "context_assembly", "temporal_queries"]
+    }
+}
+
+# Serveurs MCP officiels
+MCP_SERVERS = {
+    "cloudflare_mcp": "cloudflare/mcp-server-cloudflare",
+    "filesystem_mcp": "mcp-server-filesystem", 
+    "git_mcp": "mcp-server-git",
+    "notion_mcp": "notion-mcp-server"
 }
 ```
 
-## 📁 Structure modulaire du projet
+## 📁 Structure modulaire du projet (UV Workspace)
 
 ```
-personal-agent-pkg/
-├── CLAUDE.md                    # Mémoire Claude Code
-├── DEVELOPMENT_PLAN.md          # Ce fichier
-├── TASKS.md                     # Statut phases + todos
-├── .python-version              # 3.12
-├── pyproject.toml               # UV dependencies
+personal-agent-pkg/                   # Workspace root
+├── CLAUDE.md                         # Mémoire Claude Code
+├── DEVELOPMENT_PLAN.md               # Ce fichier
+├── TASKS.md                          # Statut phases + todos
+├── .python-version                   # 3.12
+├── pyproject.toml                    # UV workspace configuration
 ├── .claude/
-│   ├── agent-config.json        # Configuration Claude Code
-│   └── commands/                # Commandes slash personnalisées
+│   ├── agent-config.json             # Configuration Claude Code
+│   └── commands/                     # Commandes slash personnalisées
 │       ├── memory.md
 │       ├── notion.md
 │       ├── agents.md
 │       ├── context.md
 │       └── pkg.md
-├── core/
-│   ├── agents/                  # BasePersonalAgent + spécialisations
+├── packages/                         # UV workspace packages
+│   ├── core/                         # Package agents et mémoire
+│   │   ├── pyproject.toml
 │   │   ├── __init__.py
-│   │   ├── base_agent.py
-│   │   └── orchestrator.py
-│   ├── protocols/               # MCP, ACP, A2A managers
+│   │   ├── agents/                   # BasePersonalAgent + spécialisations
+│   │   │   ├── __init__.py
+│   │   │   ├── base_agent.py
+│   │   │   └── orchestrator.py
+│   │   ├── protocols/                # MCP, ACP, A2A managers
+│   │   │   ├── __init__.py
+│   │   │   ├── mcp_manager.py
+│   │   │   ├── acp_manager.py
+│   │   │   ├── a2a_manager.py
+│   │   │   └── discovery.py
+│   │   ├── graph/                    # PKG + Graphiti integration
+│   │   │   ├── __init__.py
+│   │   │   ├── pkg_engine.py
+│   │   │   ├── graphiti_engine.py
+│   │   │   ├── temporal_engine.py
+│   │   │   └── neo4j_bridge.py
+│   │   └── memory/                   # Zep Memory Engine + caching
+│   │       ├── __init__.py
+│   │       ├── zep_engine.py
+│   │       ├── zep_config.py
+│   │       └── local_cache.py
+│   ├── integrations/                 # Package intégrations
+│   │   ├── pyproject.toml
 │   │   ├── __init__.py
-│   │   ├── mcp_manager.py
-│   │   ├── acp_manager.py
-│   │   ├── a2a_manager.py
-│   │   └── discovery.py
-│   ├── graph/                   # Personal Knowledge Graph + évolution
-│   │   ├── __init__.py
-│   │   ├── pkg_engine.py
-│   │   ├── temporal_engine.py
-│   │   └── neo4j_bridge.py
-│   └── memory/                  # Zep Memory Engine + caching
+│   │   ├── notion/                   # Bridge Notion MCP ↔ Zep
+│   │   │   ├── __init__.py
+│   │   │   ├── notion_agent.py
+│   │   │   └── notion_zep_bridge.py
+│   │   ├── claude_code/              # Extension Claude Code
+│   │   │   ├── __init__.py
+│   │   │   ├── extension.py
+│   │   │   └── commands.py
+│   │   └── mobile/                   # Agent mobile companion
+│   │       ├── __init__.py
+│   │       └── mobile_sync.py
+│   └── edge/                         # Package edge processing
+│       ├── pyproject.toml
 │       ├── __init__.py
-│       ├── zep_engine.py
-│       ├── zep_config.py
-│       └── local_cache.py
-├── integrations/
-│   ├── notion/                  # Bridge Notion MCP ↔ Zep
-│   │   ├── __init__.py
-│   │   ├── notion_agent.py
-│   │   └── notion_zep_bridge.py
-│   ├── claude_code/             # Extension Claude Code
-│   │   ├── __init__.py
-│   │   ├── extension.py
-│   │   └── commands.py
-│   └── mobile/                  # Agent mobile companion
-│       ├── __init__.py
-│       └── mobile_sync.py
-├── edge/
-│   ├── local_processing/        # Ollama + processing local
-│   │   ├── __init__.py
-│   │   ├── ollama_client.py
-│   │   └── edge_agent.py
-│   └── sync/                    # Sync intelligence cloud ↔ edge
-│       ├── __init__.py
-│       └── sync_manager.py
+│       ├── local_processing/         # Ollama + processing local
+│       │   ├── __init__.py
+│       │   ├── ollama_client.py
+│       │   └── edge_agent.py
+│       └── sync/                     # Sync intelligence cloud ↔ edge
+│           ├── __init__.py
+│           └── sync_manager.py
 ├── interfaces/
-│   ├── api/                     # FastAPI orchestration backend
+│   ├── api/                          # FastAPI orchestration backend
 │   │   ├── __init__.py
 │   │   ├── main.py
 │   │   ├── routes/
 │   │   └── websocket.py
-│   └── web/                     # Web overlay pour Claude Code
+│   └── web/                          # Web overlay pour Claude Code
 │       ├── static/
 │       └── templates/
 ├── config/

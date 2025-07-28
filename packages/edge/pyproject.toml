@@ -1,0 +1,17 @@
+[project]
+name = "personal-agent-edge"
+version = "0.1.0"
+description = "Processing edge avec Ollama et sync cloud-edge"
+requires-python = ">=3.12"
+dependencies = [
+    "personal-agent-core",
+    "ollama-python>=0.1.2",
+    "langchain>=0.3.27",
+]
+
+[tool.uv.sources]
+personal-agent-core = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

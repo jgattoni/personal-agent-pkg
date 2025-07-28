@@ -1,0 +1,27 @@
+{
+    "mcpServers": {
+        "mcp-server-firecrawl": {
+            "command": "npx",
+            "args": ["-y", "firecrawl-mcp"],
+            "env": {
+            "FIRECRAWL_API_KEY": "fc-c92a4f0bd1b44eeb93605b4f3018b402"
+            }
+        },
+        "context7": {
+            "type": "http",
+            "url": "https://mcp.context7.com/mcp"
+        },
+        "Ref": {
+            "type": "http",
+            "url": "https://api.ref.tools/mcp?apiKey=ref-350582b464cd0115fe9d"
+        },
+        "exa": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "mcp-remote",
+                "https://mcp.exa.ai/mcp?exaApiKey=34d003eb-00ea-4e5c-bfcb-7a3b47bef56d"
+                ]
+        }
+    }      
+}
