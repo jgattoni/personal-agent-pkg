@@ -542,9 +542,47 @@ class BasePersonalAgent:
         memory_context: Optional[Any]
     ) -> str:
         """Génère une réponse contextuelle basée sur la mémoire"""
-        # Version simple - à remplacer par LLM
-        if memory_context:
-            return f"Based on your previous interactions, I understand you're asking about: {message}. Let me help you with that."
+        message_lower = message.lower()
+        
+        # Détection de la langue pour adapter la réponse
+        is_french = any(word in message_lower for word in ['je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'le', 'la', 'les', 'un', 'une', 'comment', 'quelle', 'quel'])
+        
+        # Recherche dans la mémoire locale pour contexte
+        context_info = []
+        if self.memory_engine and hasattr(self.memory_engine, 'memory_cache'):
+            for memory in self.memory_engine.memory_cache.values():
+                if any(word in memory.content.lower() for word in message_lower.split()):
+                    context_info.append(memory.content)
+        
+        # Questions sur l'identité
+        if any(word in message_lower for word in ['appelle', 'nom', 'suis', 'name']):
+            if context_info:
+                # Recherche d'un nom dans les mémoires
+                for info in context_info:
+                    if 'appelle' in info.lower() or 'suis' in info.lower():
+                        return f"D'après nos conversations précédentes, vous vous appelez {info.split()[-1] if info.split() else 'utilisateur'}." if is_french else f"Based on our previous conversations, your name is {info.split()[-1] if info.split() else 'user'}."
+            return "Je ne connais pas encore votre nom. Pourriez-vous me le dire ?" if is_french else "I don't know your name yet. Could you tell me?"
+        
+        # Questions sur les préférences
+        if any(word in message_lower for word in ['aime', 'préfère', 'like', 'prefer']):
+            preferences = [info for info in context_info if any(p in info.lower() for p in ['aime', 'préfère', 'like'])]
+            if preferences:
+                response = "D'après ce que vous m'avez dit, " if is_french else "From what you've told me, "
+                response += preferences[-1]  # La plus récente
+                return response
+            return "Je n'ai pas encore d'informations sur vos préférences." if is_french else "I don't have information about your preferences yet."
+        
+        # Questions générales avec contexte
+        if context_info:
+            recent_context = context_info[-1] if context_info else ""
+            if is_french:
+                return f"En me basant sur nos échanges précédents, notamment '{recent_context[:50]}...', je peux vous aider avec: {message}"
+            else:
+                return f"Based on our previous conversations, especially '{recent_context[:50]}...', I can help you with: {message}"
+        
+        # Réponse par défaut
+        if is_french:
+            return f"Je traite votre demande: {message}. Comment puis-je vous aider davantage ?"
         else:
             return f"I'm processing your request: {message}. How can I assist you further?"
     

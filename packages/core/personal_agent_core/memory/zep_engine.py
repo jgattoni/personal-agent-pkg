@@ -19,7 +19,19 @@ try:
     HAS_ZEP = True
 except ImportError:
     HAS_ZEP = False
-    ZepClient = Memory = Message = SearchPayload = SearchType = None
+    # Classes mock pour éviter les erreurs
+    class MockSearchPayload:
+        def __init__(self, text, search_type=None, search_scope=None):
+            self.text = text
+            self.search_type = search_type
+            self.search_scope = search_scope
+    
+    class MockSearchType:
+        similarity = "similarity"
+    
+    ZepClient = Memory = Message = None
+    SearchPayload = MockSearchPayload
+    SearchType = MockSearchType
 
 
 class MemoryType(str, Enum):
