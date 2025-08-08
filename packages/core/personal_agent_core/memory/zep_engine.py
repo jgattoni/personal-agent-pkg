@@ -142,10 +142,10 @@ class ZepPersonalMemoryEngine:
         self.preference_cache: Dict[str, Any] = {}
         
         # Configuration mémoire
-        self.max_working_memory = config.get("max_working_memory", 10)
-        self.cache_ttl_minutes = config.get("cache_ttl_minutes", 15)
-        self.auto_summarize = config.get("auto_summarize", True)
-        self.enable_clustering = config.get("enable_clustering", True)
+        self.max_working_memory = config.get("max_working_memory", 10) if config else 10
+        self.cache_ttl_minutes = config.get("cache_ttl_minutes", 15) if config else 15
+        self.auto_summarize = config.get("auto_summarize", True) if config else True
+        self.enable_clustering = config.get("enable_clustering", True) if config else True
         
         # Stats
         self.stats = {
@@ -159,7 +159,7 @@ class ZepPersonalMemoryEngine:
         
         # Temporal evolution
         self.last_consolidation = datetime.now()
-        self.consolidation_interval_hours = config.get("consolidation_hours", 24)
+        self.consolidation_interval_hours = config.get("consolidation_hours", 24) if config else 24
     
     async def initialize(self) -> None:
         """Initialise le moteur de mémoire et les sessions Zep"""

@@ -174,12 +174,20 @@ class TestZepPersonalMemoryEngine:
         assert engine.working_session_id == "user_test_user_working"
     
     @pytest.mark.asyncio
-    async def test_engine_initialization(self, memory_engine, mock_zep_client):
+    async def test_engine_initialization(self, mock_zep_client, mock_graphiti_engine):
         """Test initialisation du moteur"""
+        # Création du moteur pour ce test spécifique
+        engine = ZepPersonalMemoryEngine(
+            user_id="test_init",
+            zep_client=mock_zep_client,
+            graphiti_engine=mock_graphiti_engine,
+            config={"auto_summarize": True}
+        )
+        
         # Mock des sessions existantes
         mock_zep_client.memory.list_sessions.return_value = []
         
-        await memory_engine.initialize()
+        await engine.initialize()
         
         # Vérification création des sessions
         assert mock_zep_client.memory.add_session.call_count == 2
@@ -258,9 +266,9 @@ class TestZepPersonalMemoryEngine:
         summary = memory_engine._generate_summary(short_content)
         assert summary == short_content
         
-        long_content = "This is a very long content that should be summarized because it exceeds the normal length limit for content display."
+        long_content = "This is a very long content that should be summarized because it exceeds the normal length limit for content display. It contains many sentences and should definitely be truncated to something shorter."
         summary = memory_engine._generate_summary(long_content)
-        assert len(summary) < len(long_content)
+        assert len(summary) <= 103  # 100 chars + "..."
     
     @pytest.mark.asyncio
     async def test_clustering(self, initialized_memory_engine):
@@ -301,7 +309,13 @@ class TestZepPersonalMemoryEngine:
     @pytest.mark.asyncio
     async def test_search_memories_zep(self, initialized_memory_engine, mock_zep_client):
         """Test recherche via Zep"""
-        # Configuration du mock
+        # Configuration du mock avec SearchPayload import
+        try:
+            from zep_python import SearchPayload
+        except ImportError:
+            # Mock SearchPayload si zep-python n'est pas disponible
+            SearchPayload = Mock
+        
         mock_result = Mock()
         mock_result.score = 0.8
         mock_result.message = Mock()
@@ -309,7 +323,8 @@ class TestZepPersonalMemoryEngine:
         mock_result.message.metadata = {
             "memory_id": "test123",
             "memory_type": MemoryType.EPISODIC.value,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "created_at": datetime.now().isoformat()
         }
         
         mock_zep_client.memory.search_memory.return_value = [mock_result]
@@ -512,7 +527,8 @@ class TestEdgeCases:
         engine = ZepPersonalMemoryEngine(
             user_id="no_zep_test",
             zep_client=None,
-            graphiti_engine=mock_graphiti_engine
+            graphiti_engine=mock_graphiti_engine,
+            config={"auto_summarize": True}
         )
         
         await engine.initialize()
@@ -528,7 +544,8 @@ class TestEdgeCases:
         engine = ZepPersonalMemoryEngine(
             user_id="no_zep",
             zep_client=None,
-            graphiti_engine=mock_graphiti_engine
+            graphiti_engine=mock_graphiti_engine,
+            config={"enable_clustering": False}
         )
         
         await engine.initialize()

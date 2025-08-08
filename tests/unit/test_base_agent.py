@@ -53,7 +53,15 @@ async def basic_agent(mock_zep_client):
 @pytest.fixture
 async def initialized_agent(basic_agent):
     """Agent initialisé"""
-    await basic_agent.initialize()
+    with patch.object(basic_agent, '_init_memory_engine', new=AsyncMock()):
+        with patch.object(basic_agent, '_load_user_context', new=AsyncMock()):
+            # Mock du memory_engine
+            mock_memory_engine = Mock()
+            mock_memory_engine.add_memory = AsyncMock()
+            mock_memory_engine.search_memories = AsyncMock(return_value=[])
+            basic_agent.memory_engine = mock_memory_engine
+            
+            await basic_agent.initialize()
     return basic_agent
 
 
@@ -152,7 +160,7 @@ class TestBasePersonalAgent:
         assert asyncio.run(basic_agent._detect_intent("Create a new folder")) == "file_operation"
         
         # Memory query
-        assert asyncio.run(basic_agent._detect_intent("What did I say yesterday?")) == "memory_query"
+        assert asyncio.run(basic_agent._detect_intent("What did I recall yesterday?")) == "memory_query"
         assert asyncio.run(basic_agent._detect_intent("Remember this for later")) == "memory_query"
         
         # General

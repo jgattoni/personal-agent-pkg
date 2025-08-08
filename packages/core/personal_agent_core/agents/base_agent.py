@@ -13,7 +13,7 @@ import json
 from pydantic import BaseModel, Field
 import uuid
 
-from ..protocols.a2a_manager import A2AManager, A2ATask, TaskStatus
+from ..protocols.a2a_manager import A2AManager, A2ATask
 from ..protocols.mcp_manager import MCPManager, MCPTool
 from ..graph.graphiti_engine import GraphitiEngine, GraphitiEpisode, EntityType
 
