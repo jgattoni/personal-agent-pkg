@@ -1,0 +1,177 @@
+{
+  "name": "Personal Agent Extension",
+  "version": "1.0.0",
+  "description": "Agent personnel avec mémoire Zep et sync Notion",
+  "commands": {
+    "memory": {
+      "name": "memory",
+      "category": "memory",
+      "description": "Recherche dans la mémoire Zep",
+      "usage": "/memory <query> [--limit=10] [--type=all]",
+      "scope": "user",
+      "aliases": [],
+      "examples": [
+        "/memory python projet",
+        "/memory --type=preference --limit=5",
+        "/memory \"réunion équipe\" --recent"
+      ],
+      "requires_agent": true,
+      "requires_auth": false
+    },
+    "memory-add": {
+      "name": "memory-add",
+      "category": "memory",
+      "description": "Ajoute une mémoire manuellement",
+      "usage": "/memory-add <content> [--type=semantic] [--importance=medium]",
+      "scope": "user",
+      "aliases": [
+        "mem-add",
+        "remember"
+      ],
+      "examples": [
+        "/memory-add \"J'aime le café le matin\" --type=preference",
+        "/remember \"Réunion project X le vendredi\" --type=episodic"
+      ],
+      "requires_agent": true,
+      "requires_auth": false
+    },
+    "memory-stats": {
+      "name": "memory-stats",
+      "category": "memory",
+      "description": "Statistiques mémoire et clusters",
+      "usage": "/memory-stats [--detailed]",
+      "scope": "user",
+      "aliases": [
+        "mem-stats"
+      ],
+      "examples": [],
+      "requires_agent": true,
+      "requires_auth": false
+    },
+    "notion": {
+      "name": "notion",
+      "category": "notion",
+      "description": "Synchronisation Notion → Zep",
+      "usage": "/notion [sync|search|stats] [options]",
+      "scope": "user",
+      "aliases": [],
+      "examples": [
+        "/notion sync --full",
+        "/notion search \"projet agent\"",
+        "/notion stats --detailed"
+      ],
+      "requires_agent": true,
+      "requires_auth": false
+    },
+    "notion-sync": {
+      "name": "notion-sync",
+      "category": "notion",
+      "description": "Force une sync Notion complète",
+      "usage": "/notion-sync [--full] [--pages=id1,id2]",
+      "scope": "user",
+      "aliases": [
+        "nsync"
+      ],
+      "examples": [],
+      "requires_agent": true,
+      "requires_auth": false
+    },
+    "agents": {
+      "name": "agents",
+      "category": "agents",
+      "description": "Gestion multi-agents et A2A",
+      "usage": "/agents [list|discover|status|delegate] [options]",
+      "scope": "user",
+      "aliases": [],
+      "examples": [
+        "/agents list",
+        "/agents discover --network",
+        "/agents delegate task-id --to=agent-url"
+      ],
+      "requires_agent": true,
+      "requires_auth": false
+    },
+    "agent-status": {
+      "name": "agent-status",
+      "category": "agents",
+      "description": "Statut de l'agent personnel",
+      "usage": "/agent-status [--detailed]",
+      "scope": "user",
+      "aliases": [
+        "status",
+        "health"
+      ],
+      "examples": [],
+      "requires_agent": true,
+      "requires_auth": false
+    },
+    "context": {
+      "name": "context",
+      "category": "context",
+      "description": "Analyse contexte et PKG",
+      "usage": "/context [analyze|graph|timeline] [query]",
+      "scope": "user",
+      "aliases": [],
+      "examples": [
+        "/context analyze \"projet python\"",
+        "/context graph --entities=person,project",
+        "/context timeline --days=30"
+      ],
+      "requires_agent": true,
+      "requires_auth": false
+    },
+    "pkg": {
+      "name": "pkg",
+      "category": "pkg",
+      "description": "Personal Knowledge Graph evolution",
+      "usage": "/pkg [evolve|export|import|merge] [options]",
+      "scope": "user",
+      "aliases": [],
+      "examples": [
+        "/pkg evolve --auto",
+        "/pkg export --format=json --file=backup.json",
+        "/pkg merge --source=external.json"
+      ],
+      "requires_agent": true,
+      "requires_auth": false
+    },
+    "evolve": {
+      "name": "evolve",
+      "category": "system",
+      "description": "Apprentissage et amélioration agent",
+      "usage": "/evolve [learn|adapt|feedback] [options]",
+      "scope": "user",
+      "aliases": [],
+      "examples": [
+        "/evolve learn --from=conversation",
+        "/evolve adapt --preferences",
+        "/evolve feedback \"La réponse était parfaite\""
+      ],
+      "requires_agent": true,
+      "requires_auth": false
+    }
+  },
+  "settings": {
+    "auto_sync_notion": true,
+    "memory_cache_size": 1000,
+    "enable_a2a_discovery": false,
+    "default_memory_type": "semantic",
+    "response_language": "auto"
+  },
+  "integrations": {
+    "zep_memory": {
+      "enabled": true,
+      "auto_consolidate": true
+    },
+    "notion_sync": {
+      "enabled": true,
+      "sync_interval_hours": 24,
+      "auto_extract_entities": true
+    },
+    "a2a_protocol": {
+      "enabled": true,
+      "discovery_enabled": true,
+      "agent_card_url": "/.well-known/agent-card"
+    }
+  }
+}
